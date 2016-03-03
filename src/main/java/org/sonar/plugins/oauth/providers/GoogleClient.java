@@ -89,7 +89,7 @@ public class GoogleClient extends OAuthClient {
     @Override
     public OAuthUserDetails buildUser(JSONObject jsonObject) {
         return OAuthUserDetails.builder()
-                .login(jsonObject.getString("id"))
+                .login(jsonObject.getJSONArray("emails").getJSONObject(0).getString("value"))
                 .name(jsonObject.getString("displayName"))
                 .email(jsonObject.getJSONArray("emails").getJSONObject(0).getString("value"))
                 .build();

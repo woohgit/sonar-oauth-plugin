@@ -73,6 +73,10 @@ public abstract class OAuthClient implements ServerExtension {
         return settings.getString(OAuthPlugin.Settings.SONAR_SERVER_URL);
     }
 
+    private String getDomain() {
+        return settings.getString("sonar.google.domain");
+    }
+
     public OAuthUserDetails validate(Map<String, String[]> responseParameters) {
       OAuthUserDetails user = null;
         String accessToken = null;
@@ -81,6 +85,9 @@ public abstract class OAuthClient implements ServerExtension {
         if ((responseParameters.get(OAuthQueryParams.ERROR) == null || responseParameters.get(OAuthQueryParams.ERROR).length == 0)
                 && (accessToken = getAccessToken(accessTokenRequest.getUrl(), accessTokenRequest.getQueryParams(), getAccessTokenMethod(), responseParameters.get(OAuthQueryParams.CODE)[0])) != null) {
             user = getUser(getUserInfoUrl(), accessToken);
+            if ( !user.getDetails().getEmail().endsWith("@" + getDomain())) {
+                user = null;
+            }
         } else {
             LOGGER.error("Failed to authenticate user.");
         }
